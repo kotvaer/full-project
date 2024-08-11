@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: full-project
+
+server:
+  port: 9090
