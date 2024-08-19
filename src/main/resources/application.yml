@@ -5,5 +5,11 @@ spring:
     jwt:
       key: abcdefghijk
       expire: 6
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 0
 server:
   port: 9090
+

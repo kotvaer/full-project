@@ -22,6 +22,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @Configuration
 public class SecurityConfiguration {
@@ -80,7 +81,7 @@ public class SecurityConfiguration {
                                         Authentication authentication) throws IOException, ServletException {
         //获取用户信息
         User user = (User) authentication.getPrincipal();
-        String token = jwtUtils.generateToken(user, 1, "john");
+        String token = jwtUtils.generateToken(user, 2, "john");
         //相关视图对象
         AuthorizedVO authorizedVO = new AuthorizedVO();
         authorizedVO.setUsername(user.getUsername());
@@ -107,6 +108,14 @@ public class SecurityConfiguration {
     public void onLogoutSuccess(HttpServletRequest request,
                                 HttpServletResponse response,
                                 Authentication authentication) throws IOException, ServletException {
+        //设置返回格式和编码
+        response.setContentType("application/json;charset=utf-8");
+        PrintWriter writer = response.getWriter();
+        if (jwtUtils.invalidateJwt(request.getHeader("Authorization"))) {
+            writer.write(Rest.success().asJsonString());
+        } else {
+            writer.write(Rest.failure(400, "退出登录失败").asJsonString());
+        }
 
     }
 }
