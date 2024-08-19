@@ -11,6 +11,13 @@ public record Rest<T>(int code, T data, String message) {
         return new Rest<T>(200,null,"请求成功");
     }
 
+    public static <T> Rest<T> unauthorized(String message) {
+        return new Rest<T>(401,null,message);
+    }
+    public static <T> Rest<T> forbidden(String message) {
+        return new Rest<T>(403,null,message);
+    }
+
     public static <T> Rest<T> failure(int code, String message) {
         return new Rest<T>(code,null,message);
     }

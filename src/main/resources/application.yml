@@ -1,6 +1,9 @@
 spring:
   application:
     name: full-project
-
+  security:
+    jwt:
+      key: abcdefghijk
+      expire: 6
 server:
   port: 9090
