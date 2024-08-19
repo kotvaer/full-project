@@ -1,8 +1,10 @@
 package dev.example.config;
 
 import dev.example.entity.Rest;
+import dev.example.entity.dto.Account;
 import dev.example.entity.response.AuthorizedVO;
 import dev.example.filter.JwtAuthorizeFilter;
+import dev.example.service.AccountService;
 import dev.example.utils.JwtUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
@@ -17,7 +19,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -31,6 +32,9 @@ public class SecurityConfiguration {
 
     @Resource
     JwtAuthorizeFilter jwtAuthorizeFilter;
+
+    @Resource
+    AccountService service;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -81,11 +85,12 @@ public class SecurityConfiguration {
                                         Authentication authentication) throws IOException, ServletException {
         //获取用户信息
         User user = (User) authentication.getPrincipal();
-        String token = jwtUtils.generateToken(user, 2, "john");
+        Account account = service.findByUsernameOrEmail(user.getUsername());
+        String token = jwtUtils.generateToken(user, account.getId(), account.getUsername());
         //相关视图对象
         AuthorizedVO authorizedVO = new AuthorizedVO();
-        authorizedVO.setUsername(user.getUsername());
-        authorizedVO.setRole("ROLE_USER");
+        authorizedVO.setUsername(account.getUsername());
+        authorizedVO.setRole(account.getRole());
         authorizedVO.setToken(token);
         authorizedVO.setExpire(jwtUtils.expireLDT());
         //设置返回格式和编码
