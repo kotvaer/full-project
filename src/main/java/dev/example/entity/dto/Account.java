@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Account {
     @TableId(type = IdType.AUTO)
-    private int id;
+    private Integer id;
     private String username;
     private String password;
     private String email;
