@@ -6,7 +6,7 @@ import dev.example.entity.request.ConfirmResetVO;
 import dev.example.entity.request.EmailRegisterVO;
 import dev.example.entity.request.EmailResetPasswordVO;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Service;
+
 
 
 public interface AccountService extends IService<Account>, UserDetailsService {

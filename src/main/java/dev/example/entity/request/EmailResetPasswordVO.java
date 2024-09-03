@@ -1,6 +1,6 @@
 package dev.example.entity.request;
 
-import jakarta.validation.constraints.Email;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.validator.constraints.Length;
