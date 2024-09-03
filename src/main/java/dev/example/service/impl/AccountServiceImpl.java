@@ -2,7 +2,9 @@ package dev.example.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import dev.example.entity.dto.Account;
+import dev.example.entity.request.ConfirmResetVO;
 import dev.example.entity.request.EmailRegisterVO;
+import dev.example.entity.request.EmailResetPasswordVO;
 import dev.example.mapper.AccountMapper;
 import dev.example.service.AccountService;
 import dev.example.utils.Const;
@@ -78,10 +80,41 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         if (this.save(account)) {
             stringRedisTemplate.delete(key);
             return null;
-        }else {
+        } else {
             return "内部错误，请联系管理员";
         }
 
+    }
+
+    @Override
+    public String resetConfirm(ConfirmResetVO vo) {
+        String email = vo.getEmail();
+        String code = stringRedisTemplate.opsForValue().get(Const.VERIFY_EMAIL_DATA + email);
+        if (code == null) {
+            return "请先获取验证码";
+        }
+        if (!code.equals(vo.getCode())) {
+            return "验证码错误请重新输入";
+        }
+        return null;
+    }
+
+    @Override
+    public String resetAccountPasswordByPassword(EmailResetPasswordVO vo) {
+        String verify = resetConfirm(vo);
+        if (verify != null) {
+            return verify;
+        }
+        String email = vo.getEmail();
+        String password = passwordEncoder.encode(vo.getPassword());
+        boolean update = this.update()
+                .eq("email", email)
+                .set("password", password)
+                .update();
+        if (update) {
+            stringRedisTemplate.delete(Const.VERIFY_EMAIL_DATA + email);
+        }
+        return null;
     }
 
     @Override
